@@ -2,8 +2,12 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Registro de Saída de Equipes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Registro Saída" />
+<title>Registro de Saída</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -12,9 +16,10 @@
     --blue:#185FA5; --blue-light:#E6F1FB; --blue-dark:#0C447C;
     --green:#3B6D11; --green-light:#EAF3DE;
     --amber:#BA7517; --amber-light:#FAEEDA;
+    --purple:#533AB7; --purple-light:#EEEDFE;
     --radius-md:8px; --radius-lg:12px; --radius-xl:16px;
   }
-  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; -webkit-tap-highlight-color:transparent; }
 
   .header { background:var(--surface); border-bottom:1px solid var(--border); padding:14px 20px; display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:50; }
   .header-logo { width:32px; height:32px; background:var(--blue); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
@@ -38,88 +43,112 @@
 
   .section-label { font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
 
+  /* FISCAL GRID */
   .fiscal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; margin-bottom:32px; }
-  .fiscal-btn { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:14px 12px; cursor:pointer; text-align:left; transition:border-color .12s,background .12s,transform .1s; }
-  .fiscal-btn:hover { background:#F4F4F0; border-color:var(--border-md); transform:translateY(-1px); }
-  .fiscal-btn:active { transform:translateY(0); }
-  .fiscal-btn .avatar { width:38px; height:38px; border-radius:50%; background:var(--blue-light); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; color:var(--blue); margin-bottom:10px; }
-  .fiscal-btn .fname { font-size:13px; font-weight:600; color:var(--text); line-height:1.35; }
-  .fiscal-btn .fcount { font-size:11px; color:var(--muted); margin-top:3px; }
-  .fiscal-btn .fprogress { margin-top:8px; height:3px; background:var(--border); border-radius:2px; }
-  .fiscal-btn .fprogress-fill { height:100%; background:var(--blue); border-radius:2px; transition:width .3s; }
+  .fiscal-btn { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px 14px; cursor:pointer; text-align:left; -webkit-tap-highlight-color:transparent; }
+  .fiscal-btn:active { background:#F0F0EC; }
+  .fiscal-btn .avatar { width:40px; height:40px; border-radius:50%; background:var(--blue-light); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; color:var(--blue); margin-bottom:10px; }
+  .fiscal-btn .fname { font-size:14px; font-weight:600; color:var(--text); line-height:1.35; }
+  .fiscal-btn .fcount { font-size:12px; color:var(--muted); margin-top:3px; }
 
-  .back-btn { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); background:none; border:none; cursor:pointer; padding:0; margin-bottom:20px; transition:color .12s; }
-  .back-btn:hover { color:var(--text); }
+  /* MENU DE AÇÃO */
+  .action-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:32px; }
+  .action-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px 16px; cursor:pointer; text-align:left; -webkit-tap-highlight-color:transparent; transition:border-color .12s; }
+  .action-card:active { background:#F0F0EC; }
+  .action-card .ac-icon { width:44px; height:44px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; margin-bottom:14px; }
+  .action-card .ac-icon svg { width:22px; height:22px; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .action-card.saida .ac-icon { background:var(--blue-light); }
+  .action-card.saida .ac-icon svg { stroke:var(--blue); }
+  .action-card.fiscal .ac-icon { background:var(--purple-light); }
+  .action-card.fiscal .ac-icon svg { stroke:var(--purple); }
+  .action-card .ac-title { font-size:14px; font-weight:600; color:var(--text); line-height:1.35; margin-bottom:4px; }
+  .action-card .ac-sub { font-size:12px; color:var(--muted); line-height:1.4; }
+  .action-card.saida.done { border-color:#C0DD97; }
+  .action-card.saida.done .ac-icon { background:var(--green-light); }
+  .action-card.saida.done .ac-icon svg { stroke:var(--green); }
+  .action-card.fiscal.done { border-color:#CEC BF6; }
+  .action-card.fiscal.done .ac-icon { background:var(--purple-light); }
+
+  /* BACK */
+  .back-btn { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); background:none; border:none; cursor:pointer; padding:8px 0; margin-bottom:16px; -webkit-tap-highlight-color:transparent; }
   .back-btn svg { width:16px; height:16px; stroke:currentColor; stroke-width:2.5; fill:none; stroke-linecap:round; stroke-linejoin:round; }
 
+  /* FISCAL HEADER */
   .fiscal-header { display:flex; align-items:center; gap:14px; padding:16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); margin-bottom:20px; }
   .avatar-lg { width:48px; height:48px; border-radius:50%; background:var(--blue-light); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; color:var(--blue); flex-shrink:0; }
   .fiscal-header .info .name { font-size:16px; font-weight:600; }
   .fiscal-header .info .sub { font-size:12px; color:var(--muted); margin-top:2px; }
 
+  /* SUMMARY */
   .summary-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:24px; }
-  .scard { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 10px; text-align:center; }
-  .scard .sv { font-size:24px; font-weight:600; color:var(--text); }
+  .scard { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 10px; text-align:center; }
+  .scard .sv { font-size:26px; font-weight:600; color:var(--text); }
   .scard .sv.green { color:var(--green); }
   .scard .sv.amber { color:var(--amber); }
   .scard .sl { font-size:11px; color:var(--muted); margin-top:2px; }
 
-  .equipe-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:14px 16px; margin-bottom:8px; display:flex; align-items:center; gap:12px; }
-  .equipe-icon { width:38px; height:38px; border-radius:var(--radius-md); background:var(--bg); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  /* EQUIPE CARDS */
+  .equipe-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px; margin-bottom:8px; display:flex; align-items:center; gap:12px; }
+  .equipe-icon { width:40px; height:40px; border-radius:var(--radius-md); background:var(--bg); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .equipe-icon svg { width:20px; height:20px; stroke:var(--muted); stroke-width:1.8; fill:none; stroke-linecap:round; stroke-linejoin:round; }
   .equipe-card.done .equipe-icon { background:var(--green-light); }
   .equipe-card.done .equipe-icon svg { stroke:var(--green); }
-
   .equipe-info { flex:1; min-width:0; }
   .equipe-info .ename { font-size:14px; font-weight:600; }
-  .equipe-info .emeta { font-size:12px; color:var(--muted); margin-top:1px; }
-  .equipe-info .eobs { font-size:11px; color:var(--muted); margin-top:4px; font-style:italic; }
-
+  .equipe-info .eobs { font-size:12px; color:var(--muted); margin-top:3px; font-style:italic; }
   .equipe-actions { display:flex; flex-direction:column; gap:6px; flex-shrink:0; align-items:flex-end; }
-  .time-badge { font-size:12px; font-weight:600; background:var(--green-light); color:var(--green); padding:5px 10px; border-radius:var(--radius-md); white-space:nowrap; }
+  .time-badge { font-size:13px; font-weight:600; background:var(--green-light); color:var(--green); padding:6px 12px; border-radius:var(--radius-md); white-space:nowrap; }
+  .reg-btn { font-size:14px; font-weight:600; background:var(--blue); color:#fff; border:none; border-radius:var(--radius-md); padding:10px 16px; cursor:pointer; white-space:nowrap; min-height:44px; -webkit-tap-highlight-color:transparent; }
+  .reg-btn:active { background:var(--blue-dark); }
+  .edit-btn { font-size:12px; font-weight:500; background:none; color:var(--muted); border:1px solid var(--border); border-radius:var(--radius-md); padding:6px 12px; cursor:pointer; white-space:nowrap; min-height:36px; -webkit-tap-highlight-color:transparent; }
+  .edit-btn:active { background:var(--bg); }
 
-  .reg-btn { font-size:13px; font-weight:600; background:var(--blue); color:#fff; border:none; border-radius:var(--radius-md); padding:8px 14px; cursor:pointer; white-space:nowrap; transition:background .12s; }
-  .reg-btn:hover { background:var(--blue-dark); }
-  .edit-btn { font-size:12px; font-weight:500; background:none; color:var(--muted); border:1px solid var(--border); border-radius:var(--radius-md); padding:5px 10px; cursor:pointer; white-space:nowrap; transition:color .12s,border-color .12s; }
-  .edit-btn:hover { color:var(--text); border-color:var(--border-md); }
+  /* FISCALIZAÇÃO */
+  .fisc-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px 20px; margin-bottom:16px; }
+  .fisc-card .fisc-label { font-size:13px; color:var(--muted); margin-bottom:12px; }
+  .fisc-input-row { display:flex; gap:10px; align-items:stretch; }
+  .fisc-input { flex:1; padding:16px; font-size:32px; font-weight:700; text-align:center; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-md); color:var(--text); font-family:inherit; min-height:72px; -webkit-appearance:none; }
+  .fisc-input:focus { outline:none; border-color:var(--purple); }
+  .fisc-input::-webkit-inner-spin-button, .fisc-input::-webkit-outer-spin-button { -webkit-appearance:none; }
+  .fisc-registered { display:flex; align-items:center; justify-content:space-between; padding:16px; background:var(--purple-light); border-radius:var(--radius-lg); margin-bottom:16px; }
+  .fisc-registered .fr-num { font-size:40px; font-weight:700; color:var(--purple); }
+  .fisc-registered .fr-label { font-size:12px; color:var(--purple); opacity:0.8; margin-top:2px; }
+  .fisc-save-btn { width:100%; background:var(--purple); color:#fff; border:none; border-radius:var(--radius-md); padding:16px; font-size:16px; font-weight:600; cursor:pointer; min-height:54px; -webkit-tap-highlight-color:transparent; }
+  .fisc-save-btn:active { background:#3C3489; }
+  .fisc-save-btn:disabled { background:var(--border-md); cursor:not-allowed; }
 
+  /* EXPORT */
   .export-row { display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
-  .export-btn { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500; padding:8px 14px; cursor:pointer; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); color:var(--muted); transition:color .12s,border-color .12s; }
-  .export-btn:hover { color:var(--text); border-color:var(--border-md); }
-  .export-btn svg { width:14px; height:14px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .export-btn { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:500; padding:10px 16px; cursor:pointer; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); color:var(--muted); min-height:44px; -webkit-tap-highlight-color:transparent; }
+  .export-btn svg { width:15px; height:15px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
 
-  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); align-items:flex-end; justify-content:center; z-index:200; }
-  @media(min-width:480px){ .modal-overlay { align-items:center; padding:20px; } }
+  /* MODAL */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:flex-end; justify-content:center; z-index:200; }
   .modal-overlay.open { display:flex; }
-  .modal { background:var(--surface); border-radius:var(--radius-xl) var(--radius-xl) 0 0; padding:24px 20px 32px; width:100%; max-width:420px; }
-  @media(min-width:480px){ .modal { border-radius:var(--radius-xl); padding:24px; } }
-  .modal-drag { width:36px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 20px; }
-  @media(min-width:480px){ .modal-drag { display:none; } }
-  .modal h3 { font-size:16px; font-weight:600; margin-bottom:3px; }
+  .modal { background:var(--surface); border-radius:20px 20px 0 0; padding:12px 20px 40px; width:100%; max-width:560px; }
+  @media(min-width:560px){ .modal { border-radius:var(--radius-xl); margin-bottom:20px; padding:24px; } }
+  .modal-drag { width:40px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 20px; }
+  .modal h3 { font-size:17px; font-weight:600; margin-bottom:3px; }
   .modal .msub { font-size:13px; color:var(--muted); margin-bottom:20px; }
-  .modal-edit-badge { display:inline-block; font-size:11px; font-weight:600; background:var(--amber-light); color:var(--amber); padding:3px 8px; border-radius:var(--radius-md); margin-bottom:16px; }
-
+  .modal-edit-badge { display:inline-block; font-size:12px; font-weight:600; background:var(--amber-light); color:var(--amber); padding:4px 10px; border-radius:var(--radius-md); margin-bottom:16px; }
   .field-label { font-size:12px; font-weight:600; color:var(--muted); margin-bottom:6px; letter-spacing:.03em; }
   .time-row { display:flex; gap:8px; align-items:stretch; margin-bottom:16px; }
-  .time-row input[type=time] { flex:1; padding:11px 14px; font-size:18px; font-weight:600; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-md); color:var(--text); font-family:inherit; }
+  .time-row input[type=time] { flex:1; padding:14px; font-size:22px; font-weight:600; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-md); color:var(--text); font-family:inherit; min-height:56px; }
   .time-row input[type=time]:focus { outline:none; border-color:var(--blue); }
-  .now-btn { padding:0 14px; cursor:pointer; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-md); color:var(--muted); font-size:12px; font-weight:500; white-space:nowrap; transition:color .12s,border-color .12s; }
-  .now-btn:hover { color:var(--text); border-color:var(--border-md); }
-
-  textarea.obs-input { width:100%; padding:11px 14px; font-size:13px; font-family:inherit; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-md); color:var(--text); resize:none; margin-bottom:20px; line-height:1.5; }
+  .now-btn { padding:0 16px; cursor:pointer; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-md); color:var(--muted); font-size:13px; font-weight:600; white-space:nowrap; min-height:56px; min-width:72px; -webkit-tap-highlight-color:transparent; }
+  .now-btn:active { background:var(--border); }
+  textarea.obs-input { width:100%; padding:14px; font-size:14px; font-family:inherit; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-md); color:var(--text); resize:none; margin-bottom:20px; line-height:1.5; }
   textarea.obs-input:focus { outline:none; border-color:var(--blue); }
-
   .modal-actions { display:flex; gap:8px; }
-  .confirm-btn { flex:1; background:var(--blue); color:#fff; border:none; border-radius:var(--radius-md); padding:12px; font-size:14px; font-weight:600; cursor:pointer; transition:background .12s; }
-  .confirm-btn:hover { background:var(--blue-dark); }
+  .confirm-btn { flex:1; background:var(--blue); color:#fff; border:none; border-radius:var(--radius-md); padding:16px; font-size:16px; font-weight:600; cursor:pointer; min-height:54px; -webkit-tap-highlight-color:transparent; }
+  .confirm-btn:active { background:var(--blue-dark); }
   .confirm-btn:disabled { background:var(--border-md); cursor:not-allowed; }
-  .cancel-btn { background:none; border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 20px; font-size:14px; font-weight:500; cursor:pointer; color:var(--muted); transition:color .12s; }
-  .cancel-btn:hover { color:var(--text); }
+  .cancel-btn { background:none; border:1px solid var(--border); border-radius:var(--radius-md); padding:16px 20px; font-size:15px; font-weight:500; cursor:pointer; color:var(--muted); min-height:54px; min-width:90px; }
+  .cancel-btn:active { background:var(--bg); }
 
-  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#1A1A18; color:#fff; padding:10px 20px; border-radius:100px; font-size:13px; font-weight:500; opacity:0; transition:opacity .2s; z-index:300; pointer-events:none; white-space:nowrap; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#1A1A18; color:#fff; padding:12px 24px; border-radius:100px; font-size:14px; font-weight:500; opacity:0; transition:opacity .2s; z-index:300; pointer-events:none; white-space:nowrap; box-shadow:0 4px 16px rgba(0,0,0,.25); }
   .toast.show { opacity:1; }
-
-  .all-done { display:none; background:var(--green-light); border:1px solid #C0DD97; border-radius:var(--radius-lg); padding:16px; margin-top:16px; text-align:center; font-size:14px; font-weight:600; color:var(--green); }
+  .all-done { display:none; background:var(--green-light); border:1px solid #C0DD97; border-radius:var(--radius-lg); padding:18px; margin-top:16px; text-align:center; font-size:15px; font-weight:600; color:var(--green); }
 </style>
 </head>
 <body>
@@ -134,11 +163,12 @@
 </div>
 
 <div class="main">
-  <!-- STEP 1 -->
+
+  <!-- STEP 1: Selecionar fiscal -->
   <div class="step active" id="step-fiscal">
     <div style="margin-bottom:20px">
-      <div style="font-size:20px;font-weight:700;margin-bottom:4px">Quem é você?</div>
-      <div style="font-size:13px;color:var(--muted)">Selecione seu nome para ver suas equipes</div>
+      <div style="font-size:22px;font-weight:700;margin-bottom:4px">Quem é você?</div>
+      <div style="font-size:14px;color:var(--muted)">Toque no seu nome para continuar</div>
     </div>
     <div id="loading-fiscais" class="loading-state"><div class="spinner"></div><p>Carregando fiscais...</p></div>
     <div id="error-fiscais" style="display:none"></div>
@@ -146,37 +176,90 @@
     <div class="fiscal-grid" id="fiscal-grid"></div>
   </div>
 
-  <!-- STEP 2 -->
-  <div class="step" id="step-equipes">
-    <button class="back-btn" onclick="goBack()">
+  <!-- STEP 2: Menu de ação -->
+  <div class="step" id="step-menu">
+    <button class="back-btn" onclick="goToFiscais()">
       <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
       Trocar fiscal
     </button>
-    <div id="loading-equipes" class="loading-state" style="display:none"><div class="spinner"></div><p>Carregando registros de hoje...</p></div>
-    <div id="conteudo-equipes" style="display:none">
-      <div class="fiscal-header">
-        <div class="avatar-lg" id="eq-avatar"></div>
-        <div class="info"><div class="name" id="eq-nome"></div><div class="sub" id="eq-sub"></div></div>
+    <div class="fiscal-header">
+      <div class="avatar-lg" id="menu-avatar"></div>
+      <div class="info"><div class="name" id="menu-nome"></div><div class="sub" id="menu-sub"></div></div>
+    </div>
+    <div class="section-label">O que você quer registrar hoje?</div>
+    <div class="action-grid">
+      <div class="action-card saida" id="card-saida" onclick="goToSaidas()">
+        <div class="ac-icon">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <div class="ac-title">Saída das equipes</div>
+        <div class="ac-sub" id="saida-status">Registrar horário de saída</div>
       </div>
-      <div class="summary-cards" id="summary-cards"></div>
-      <div class="section-label">Equipes sob sua responsabilidade</div>
-      <div id="equipes-list"></div>
-      <div class="all-done" id="all-done">✓ Todas as equipes foram registradas hoje</div>
-      <div class="export-row">
-        <button class="export-btn" onclick="exportarCSV()">
-          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Exportar CSV
-        </button>
-        <button class="export-btn" onclick="copiarTexto()">
-          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          Copiar resumo
-        </button>
+      <div class="action-card fiscal" id="card-fiscal" onclick="goToFiscalizacao()">
+        <div class="ac-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <div class="ac-title">Fiscalizações</div>
+        <div class="ac-sub" id="fisc-status">Registrar quantidade do dia</div>
       </div>
     </div>
   </div>
+
+  <!-- STEP 3A: Saídas das equipes -->
+  <div class="step" id="step-saidas">
+    <button class="back-btn" onclick="goToMenu()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Voltar
+    </button>
+    <div class="fiscal-header">
+      <div class="avatar-lg" id="eq-avatar"></div>
+      <div class="info"><div class="name" id="eq-nome"></div><div class="sub" id="eq-sub"></div></div>
+    </div>
+    <div class="summary-cards" id="summary-cards"></div>
+    <div class="section-label">Equipes sob sua responsabilidade</div>
+    <div id="equipes-list"></div>
+    <div class="all-done" id="all-done">✓ Todas as equipes foram registradas hoje</div>
+    <div class="export-row">
+      <button class="export-btn" onclick="copiarTexto()">
+        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copiar resumo
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 3B: Fiscalizações -->
+  <div class="step" id="step-fiscalizacao">
+    <button class="back-btn" onclick="goToMenu()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Voltar
+    </button>
+    <div class="fiscal-header">
+      <div class="avatar-lg" id="fisc-avatar"></div>
+      <div class="info"><div class="name" id="fisc-nome"></div><div class="sub">Fiscalizações do dia</div></div>
+    </div>
+    <div id="fisc-ja-registrado" style="display:none">
+      <div class="fisc-registered">
+        <div>
+          <div class="fr-num" id="fisc-num-registrado">0</div>
+          <div class="fr-label">fiscalizações registradas hoje</div>
+        </div>
+        <button class="edit-btn" onclick="editarFiscalizacao()">Editar</button>
+      </div>
+    </div>
+    <div id="fisc-form">
+      <div class="fisc-card">
+        <div class="fisc-label">Quantas fiscalizações você realizou hoje?</div>
+        <div class="fisc-input-row">
+          <input type="number" class="fisc-input" id="fisc-quantidade" min="0" placeholder="0" inputmode="numeric" />
+        </div>
+      </div>
+      <button class="fisc-save-btn" id="fisc-save-btn" onclick="salvarFiscalizacao()">Confirmar</button>
+    </div>
+  </div>
+
 </div>
 
-<!-- MODAL -->
+<!-- MODAL de saída -->
 <div class="modal-overlay" id="modal" role="dialog" aria-modal="true">
   <div class="modal">
     <div class="modal-drag"></div>
@@ -189,7 +272,7 @@
       <button class="now-btn" onclick="setNow()">Agora</button>
     </div>
     <div class="field-label">Observação <span style="font-weight:400;color:var(--hint)">(opcional)</span></div>
-    <textarea class="obs-input" id="obs-input" rows="2" placeholder="Ex: equipe saiu com atraso por chuva..."></textarea>
+    <textarea class="obs-input" id="obs-input" rows="2" placeholder="Ex: saiu com atraso por chuva..."></textarea>
     <div class="modal-actions">
       <button class="cancel-btn" onclick="closeModal()">Cancelar</button>
       <button class="confirm-btn" id="confirm-btn" onclick="confirmarRegistro()">Confirmar saída</button>
@@ -201,30 +284,30 @@
 
 <script>
 // ══════════════════════════════════════════════
-// CONFIGURAÇÃO
+// CONFIGURAÇÃO — substitua pela URL do Script 2
 // ══════════════════════════════════════════════
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby7R9KtimGaOjELK_eD3cYguVzBhDXB2NPWdRcXDshCBKZ1B2nsr2Yj1Ijcvrw6zxat/exec";
 // ══════════════════════════════════════════════
 
 let state = {
-  fiscalNome: null,
-  equipes:    [],
-  registros:  {}   // chave: nomeEquipe → { hora, obs, rowIndex }
+  fiscalNome:   null,
+  equipes:      [],
+  registros:    {},
+  fiscalizacao: null   // { quantidade, rowIndex } ou null
 };
-let allFiscais = [];
+let allFiscais    = [];
 let pendingEquipe = null;
-let modoEdicao = false;
+let modoEdicao    = false;
 
-// ── DATA NO HEADER ─────────────────────────────
 document.getElementById("header-date").textContent =
   new Date().toLocaleDateString("pt-BR", { weekday:"short", day:"numeric", month:"short" });
 
-// ── CARREGAR FISCAIS ───────────────────────────
 carregarFiscais();
 
+// ── CARREGAR FISCAIS ───────────────────────────
 async function carregarFiscais() {
   try {
-    const res  = await fetch(`${APPS_SCRIPT_URL}?acao=listarFiscais`);
+    const res  = await fetch(APPS_SCRIPT_URL + "?acao=listarFiscais");
     const data = await res.json();
     if (data.erro) throw new Error(data.erro);
     allFiscais = data.fiscais;
@@ -234,16 +317,11 @@ async function carregarFiscais() {
   } catch(e) {
     document.getElementById("loading-fiscais").style.display = "none";
     document.getElementById("error-fiscais").style.display   = "block";
-    document.getElementById("error-fiscais").innerHTML = `
-      <div class="error-state">
-        <strong>Não foi possível carregar os fiscais</strong>
-        Verifique se a URL do Apps Script está correta e se a planilha está configurada.<br><br>
-        <small>${e.message}</small>
-      </div>`;
+    document.getElementById("error-fiscais").innerHTML =
+      '<div class="error-state"><strong>Não foi possível carregar os fiscais</strong>Verifique a conexão e tente recarregar a página.<br><br><small>' + e.message + '</small></div>';
   }
 }
 
-// ── RENDER FISCAIS ─────────────────────────────
 function initials(nome) {
   return nome.trim().split(/\s+/).slice(0,2).map(p=>p[0].toUpperCase()).join("");
 }
@@ -252,54 +330,135 @@ function renderFiscais() {
   const grid = document.getElementById("fiscal-grid");
   grid.innerHTML = "";
   allFiscais.forEach(f => {
-    const total  = f.equipes.length;
-    const feitos = f.equipes.filter(eq => state.fiscalNome === f.nome && state.registros[eq]).length;
-    const pct    = total > 0 ? Math.round((feitos/total)*100) : 0;
-    const btn    = document.createElement("button");
+    const btn = document.createElement("button");
     btn.className = "fiscal-btn";
-    btn.innerHTML = `
-      <div class="avatar">${initials(f.nome)}</div>
-      <div class="fname">${f.nome}</div>
-      <div class="fcount">${total} equipe${total!==1?"s":""}</div>
-      <div class="fprogress"><div class="fprogress-fill" style="width:${pct}%"></div></div>`;
+    btn.innerHTML =
+      '<div class="avatar">' + initials(f.nome) + '</div>' +
+      '<div class="fname">' + f.nome + '</div>' +
+      '<div class="fcount">' + f.equipes.length + ' equipe' + (f.equipes.length!==1?'s':'') + '</div>';
     btn.onclick = () => selectFiscal(f);
     grid.appendChild(btn);
   });
 }
 
-// ── SELECIONAR FISCAL ──────────────────────────
+// ── SELECIONAR FISCAL → MENU ───────────────────
 async function selectFiscal(fiscal) {
-  state.fiscalNome = fiscal.nome;
-  state.equipes    = fiscal.equipes;
-  state.registros  = {};
+  state.fiscalNome   = fiscal.nome;
+  state.equipes      = fiscal.equipes;
+  state.registros    = {};
+  state.fiscalizacao = null;
 
-  document.getElementById("eq-avatar").textContent = initials(fiscal.nome);
-  document.getElementById("eq-nome").textContent   = fiscal.nome;
+  const hoje = new Date().toLocaleDateString("pt-BR");
 
-  document.getElementById("step-fiscal").classList.remove("active");
-  document.getElementById("step-equipes").classList.add("active");
-  document.getElementById("loading-equipes").style.display  = "flex";
-  document.getElementById("conteudo-equipes").style.display = "none";
+  // Carrega os dois em paralelo
+  const [resRegistros, resFisc] = await Promise.all([
+    fetch(APPS_SCRIPT_URL + "?acao=buscarRegistrosHoje&fiscal=" + encodeURIComponent(fiscal.nome) + "&data=" + encodeURIComponent(hoje)).then(r=>r.json()).catch(()=>({ registros:[] })),
+    fetch(APPS_SCRIPT_URL + "?acao=buscarFiscalizacaoHoje&fiscal=" + encodeURIComponent(fiscal.nome) + "&data=" + encodeURIComponent(hoje)).then(r=>r.json()).catch(()=>({ encontrado:false }))
+  ]);
 
-  // Busca registros de hoje para este fiscal
-  try {
-    const hoje = new Date().toLocaleDateString("pt-BR");
-    const res  = await fetch(`${APPS_SCRIPT_URL}?acao=buscarRegistrosHoje&fiscal=${encodeURIComponent(fiscal.nome)}&data=${encodeURIComponent(hoje)}`);
-    const data = await res.json();
-    if (data.erro) throw new Error(data.erro);
+  (resRegistros.registros || []).forEach(r => {
+    state.registros[r.equipe] = { hora:r.hora, obs:r.obs, rowIndex:r.rowIndex };
+  });
 
-    // Preenche state.registros com o que já existe hoje
-    (data.registros || []).forEach(r => {
-      state.registros[r.equipe] = { hora: r.hora, obs: r.obs, rowIndex: r.rowIndex };
-    });
-  } catch(e) {
-    // Se falhar a busca, continua sem registros (não bloqueia o uso)
-    console.warn("Aviso: não foi possível carregar registros de hoje.", e.message);
+  if (resFisc.encontrado) {
+    state.fiscalizacao = { quantidade: resFisc.quantidade, rowIndex: resFisc.rowIndex };
   }
 
-  document.getElementById("loading-equipes").style.display  = "none";
-  document.getElementById("conteudo-equipes").style.display = "block";
+  goToMenu();
+}
+
+// ── NAVEGAÇÃO ──────────────────────────────────
+function showStep(id) {
+  document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function goToFiscais() {
+  state.fiscalNome = null;
+  showStep("step-fiscal");
+}
+
+function goToMenu() {
+  const total  = state.equipes.length;
+  const feitos = state.equipes.filter(eq => state.registros[eq]).length;
+
+  document.getElementById("menu-avatar").textContent = initials(state.fiscalNome);
+  document.getElementById("menu-nome").textContent   = state.fiscalNome;
+  document.getElementById("menu-sub").textContent    = "Selecione o que deseja registrar";
+
+  // Status do card de saídas
+  const saidaStatus = document.getElementById("saida-status");
+  const cardSaida   = document.getElementById("card-saida");
+  if (feitos === total && total > 0) {
+    saidaStatus.textContent = "✓ Todas registradas";
+    cardSaida.classList.add("done");
+  } else if (feitos > 0) {
+    saidaStatus.textContent = feitos + " de " + total + " registradas";
+    cardSaida.classList.remove("done");
+  } else {
+    saidaStatus.textContent = "Registrar horário de saída";
+    cardSaida.classList.remove("done");
+  }
+
+  // Status do card de fiscalizações
+  const fiscStatus = document.getElementById("fisc-status");
+  if (state.fiscalizacao) {
+    fiscStatus.textContent = "✓ " + state.fiscalizacao.quantidade + " registradas hoje";
+    document.getElementById("card-fiscal").classList.add("done");
+  } else {
+    fiscStatus.textContent = "Registrar quantidade do dia";
+    document.getElementById("card-fiscal").classList.remove("done");
+  }
+
+  showStep("step-menu");
+}
+
+function goToSaidas() {
+  document.getElementById("eq-avatar").textContent = initials(state.fiscalNome);
+  document.getElementById("eq-nome").textContent   = state.fiscalNome;
   renderEquipes();
+  showStep("step-saidas");
+}
+
+function goToFiscalizacao() {
+  document.getElementById("fisc-avatar").textContent = initials(state.fiscalNome);
+  document.getElementById("fisc-nome").textContent   = state.fiscalNome;
+  renderFiscalizacao();
+  showStep("step-fiscalizacao");
+}
+
+function goToMenu() {
+  // (redefinida acima, esta chamada é para navegação de volta)
+  const total  = state.equipes.length;
+  const feitos = state.equipes.filter(eq => state.registros[eq]).length;
+
+  document.getElementById("menu-avatar").textContent = initials(state.fiscalNome);
+  document.getElementById("menu-nome").textContent   = state.fiscalNome;
+  document.getElementById("menu-sub").textContent    = "Selecione o que deseja registrar";
+
+  const saidaStatus = document.getElementById("saida-status");
+  const cardSaida   = document.getElementById("card-saida");
+  if (feitos === total && total > 0) {
+    saidaStatus.textContent = "✓ Todas registradas";
+    cardSaida.classList.add("done");
+  } else if (feitos > 0) {
+    saidaStatus.textContent = feitos + " de " + total + " registradas";
+    cardSaida.classList.remove("done");
+  } else {
+    saidaStatus.textContent = "Registrar horário de saída";
+    cardSaida.classList.remove("done");
+  }
+
+  const fiscStatus = document.getElementById("fisc-status");
+  if (state.fiscalizacao) {
+    fiscStatus.textContent = "✓ " + state.fiscalizacao.quantidade + " registradas hoje";
+    document.getElementById("card-fiscal").classList.add("done");
+  } else {
+    fiscStatus.textContent = "Registrar quantidade do dia";
+    document.getElementById("card-fiscal").classList.remove("done");
+  }
+
+  showStep("step-menu");
 }
 
 // ── RENDER EQUIPES ─────────────────────────────
@@ -308,47 +467,105 @@ function renderEquipes() {
   const feitos   = state.equipes.filter(eq => state.registros[eq]).length;
   const pendentes = total - feitos;
 
-  document.getElementById("eq-sub").textContent = `${feitos} de ${total} equipes registradas hoje`;
-  document.getElementById("summary-cards").innerHTML = `
-    <div class="scard"><div class="sv">${total}</div><div class="sl">Total</div></div>
-    <div class="scard"><div class="sv green">${feitos}</div><div class="sl">Registradas</div></div>
-    <div class="scard"><div class="sv ${pendentes>0?"amber":"green"}">${pendentes}</div><div class="sl">Pendentes</div></div>`;
+  document.getElementById("eq-sub").textContent = feitos + " de " + total + " registradas hoje";
+  document.getElementById("summary-cards").innerHTML =
+    '<div class="scard"><div class="sv">' + total + '</div><div class="sl">Total</div></div>' +
+    '<div class="scard"><div class="sv green">' + feitos + '</div><div class="sl">Registradas</div></div>' +
+    '<div class="scard"><div class="sv ' + (pendentes>0?"amber":"green") + '">' + pendentes + '</div><div class="sl">Pendentes</div></div>';
 
   const list = document.getElementById("equipes-list");
   list.innerHTML = "";
-
-  const svgUsers = `<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>`;
-  const svgCheck = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+  const svgUsers = '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>';
+  const svgCheck = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
 
   state.equipes.forEach(nomeEquipe => {
     const reg  = state.registros[nomeEquipe];
     const card = document.createElement("div");
     card.className = "equipe-card" + (reg ? " done" : "");
-
-    const safeName = nomeEquipe.replace(/'/g, "\\'");
-    card.innerHTML = `
-      <div class="equipe-icon">${reg ? svgCheck : svgUsers}</div>
-      <div class="equipe-info">
-        <div class="ename">${nomeEquipe}</div>
-        ${reg && reg.obs ? `<div class="eobs">"${reg.obs}"</div>` : ""}
-      </div>
-      <div class="equipe-actions">
-        ${reg
-          ? `<div class="time-badge">${reg.hora}</div>
-             <button class="edit-btn" onclick="openModal('${safeName}', true)">Editar</button>`
-          : `<button class="reg-btn" onclick="openModal('${safeName}', false)">Registrar saída</button>`
-        }
-      </div>`;
+    const safe = nomeEquipe.replace(/'/g,"\\'");
+    card.innerHTML =
+      '<div class="equipe-icon">' + (reg ? svgCheck : svgUsers) + '</div>' +
+      '<div class="equipe-info">' +
+        '<div class="ename">' + nomeEquipe + '</div>' +
+        (reg && reg.obs ? '<div class="eobs">"' + reg.obs + '"</div>' : '') +
+      '</div>' +
+      '<div class="equipe-actions">' +
+        (reg
+          ? '<div class="time-badge">' + reg.hora + '</div><button class="edit-btn" onclick="openModal(\'' + safe + '\',true)">Editar</button>'
+          : '<button class="reg-btn" onclick="openModal(\'' + safe + '\',false)">Registrar saída</button>'
+        ) +
+      '</div>';
     list.appendChild(card);
   });
 
-  document.getElementById("all-done").style.display =
-    (feitos === total && total > 0) ? "block" : "none";
-
-  renderFiscais();
+  document.getElementById("all-done").style.display = (feitos===total && total>0) ? "block" : "none";
 }
 
-// ── MODAL ──────────────────────────────────────
+// ── RENDER FISCALIZAÇÃO ────────────────────────
+function renderFiscalizacao() {
+  const jaRegistrado = document.getElementById("fisc-ja-registrado");
+  const form         = document.getElementById("fisc-form");
+
+  if (state.fiscalizacao) {
+    document.getElementById("fisc-num-registrado").textContent = state.fiscalizacao.quantidade;
+    jaRegistrado.style.display = "block";
+    form.style.display         = "none";
+  } else {
+    jaRegistrado.style.display = "none";
+    form.style.display         = "block";
+    document.getElementById("fisc-quantidade").value = "";
+    document.getElementById("fisc-save-btn").disabled = false;
+    document.getElementById("fisc-save-btn").textContent = "Confirmar";
+  }
+}
+
+function editarFiscalizacao() {
+  document.getElementById("fisc-ja-registrado").style.display = "none";
+  document.getElementById("fisc-form").style.display          = "block";
+  document.getElementById("fisc-quantidade").value            = state.fiscalizacao ? state.fiscalizacao.quantidade : "";
+  document.getElementById("fisc-save-btn").textContent        = "Salvar alteração";
+}
+
+async function salvarFiscalizacao() {
+  const val = document.getElementById("fisc-quantidade").value;
+  if (val === "" || isNaN(val) || Number(val) < 0) {
+    showToast("Informe um número válido");
+    return;
+  }
+
+  const btn = document.getElementById("fisc-save-btn");
+  btn.disabled = true;
+  btn.textContent = "Salvando...";
+  document.getElementById("saving-dot").classList.add("active");
+
+  const editando = !!state.fiscalizacao;
+  const payload = {
+    acao:       editando ? "editarFiscalizacao" : "registrarFiscalizacao",
+    fiscal:     state.fiscalNome,
+    data:       new Date().toLocaleDateString("pt-BR"),
+    quantidade: Number(val),
+    rowIndex:   editando ? state.fiscalizacao.rowIndex : null
+  };
+
+  try {
+    const res  = await fetch(APPS_SCRIPT_URL, { method:"POST", body:JSON.stringify(payload) });
+    const data = await res.json();
+    if (data.erro) throw new Error(data.erro);
+
+    state.fiscalizacao = { quantidade: Number(val), rowIndex: data.rowIndex || payload.rowIndex };
+    renderFiscalizacao();
+    showToast(editando ? "Fiscalizações atualizadas ✓" : "Fiscalizações registradas ✓");
+    setTimeout(() => goToMenu(), 1200);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = editando ? "Salvar alteração" : "Confirmar";
+    showToast("Erro ao salvar — tente novamente");
+  } finally {
+    document.getElementById("saving-dot").classList.remove("active");
+  }
+}
+
+// ── MODAL DE SAÍDA ─────────────────────────────
 function nowStr() {
   const d = new Date();
   return d.getHours().toString().padStart(2,"0") + ":" + d.getMinutes().toString().padStart(2,"0");
@@ -358,107 +575,65 @@ function openModal(nomeEquipe, editando) {
   pendingEquipe = nomeEquipe;
   modoEdicao    = editando;
   const reg = state.registros[nomeEquipe];
-
-  document.getElementById("modal-title").textContent      = nomeEquipe;
-  document.getElementById("modal-sub").textContent        = `Fiscal: ${state.fiscalNome}`;
+  document.getElementById("modal-title").textContent        = nomeEquipe;
+  document.getElementById("modal-sub").textContent          = "Fiscal: " + state.fiscalNome;
   document.getElementById("modal-edit-badge").style.display = editando ? "inline-block" : "none";
-  document.getElementById("time-input").value             = editando && reg ? reg.hora : nowStr();
-  document.getElementById("obs-input").value              = editando && reg ? (reg.obs || "") : "";
-  document.getElementById("confirm-btn").disabled         = false;
-  document.getElementById("confirm-btn").textContent      = editando ? "Salvar alteração" : "Confirmar saída";
+  document.getElementById("time-input").value               = (editando && reg) ? reg.hora : nowStr();
+  document.getElementById("obs-input").value                = (editando && reg) ? (reg.obs||"") : "";
+  document.getElementById("confirm-btn").disabled           = false;
+  document.getElementById("confirm-btn").textContent        = editando ? "Salvar alteração" : "Confirmar saída";
   document.getElementById("modal").classList.add("open");
 }
 
 function closeModal() {
   document.getElementById("modal").classList.remove("open");
-  pendingEquipe = null;
-  modoEdicao    = false;
+  pendingEquipe = null; modoEdicao = false;
 }
 
 function setNow() { document.getElementById("time-input").value = nowStr(); }
 
-// ── CONFIRMAR / EDITAR ─────────────────────────
 async function confirmarRegistro() {
   const hora = document.getElementById("time-input").value;
   const obs  = document.getElementById("obs-input").value.trim();
   if (!hora) { showToast("Informe o horário"); return; }
 
   const btn = document.getElementById("confirm-btn");
-  btn.disabled    = true;
-  btn.textContent = "Salvando...";
+  btn.disabled = true; btn.textContent = "Salvando...";
   document.getElementById("saving-dot").classList.add("active");
 
-  const rowIndex = modoEdicao && state.registros[pendingEquipe]
-    ? state.registros[pendingEquipe].rowIndex
-    : null;
+  const rowIndex = (modoEdicao && state.registros[pendingEquipe])
+    ? state.registros[pendingEquipe].rowIndex : null;
 
   const payload = {
     acao:     modoEdicao ? "editarSaida" : "registrarSaida",
-    fiscal:   state.fiscalNome,
-    equipe:   pendingEquipe,
-    hora:     hora,
-    obs:      obs,
-    data:     new Date().toLocaleDateString("pt-BR"),
-    rowIndex: rowIndex
+    fiscal:   state.fiscalNome, equipe: pendingEquipe,
+    hora, obs, data: new Date().toLocaleDateString("pt-BR"), rowIndex
   };
 
   try {
     const res  = await fetch(APPS_SCRIPT_URL, { method:"POST", body:JSON.stringify(payload) });
     const data = await res.json();
     if (data.erro) throw new Error(data.erro);
-
-    state.registros[pendingEquipe] = {
-      hora,
-      obs,
-      rowIndex: data.rowIndex || rowIndex
-    };
-
+    state.registros[pendingEquipe] = { hora, obs, rowIndex: data.rowIndex || rowIndex };
     closeModal();
     renderEquipes();
     showToast(modoEdicao ? "Registro atualizado ✓" : "Saída registrada ✓");
   } catch(e) {
-    btn.disabled    = false;
+    btn.disabled = false;
     btn.textContent = modoEdicao ? "Salvar alteração" : "Confirmar saída";
     showToast("Erro ao salvar — tente novamente");
-    console.error(e);
   } finally {
     document.getElementById("saving-dot").classList.remove("active");
   }
 }
 
-// ── VOLTAR ─────────────────────────────────────
-function goBack() {
-  document.getElementById("step-equipes").classList.remove("active");
-  document.getElementById("step-fiscal").classList.add("active");
-  document.getElementById("conteudo-equipes").style.display = "none";
-  document.getElementById("loading-equipes").style.display  = "none";
-  state.fiscalNome = null;
-  renderFiscais();
-}
-
-// ── EXPORTAR CSV ───────────────────────────────
-function exportarCSV() {
-  const hoje = new Date().toLocaleDateString("pt-BR");
-  let csv = "Data,Fiscal,Equipe,Horário de Saída,Observação\n";
-  state.equipes.forEach(eq => {
-    const reg = state.registros[eq];
-    csv += `"${hoje}","${state.fiscalNome}","${eq}","${reg?reg.hora:""}","${reg&&reg.obs?reg.obs:""}"\n`;
-  });
-  const blob = new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8;"});
-  const a = document.createElement("a");
-  a.href     = URL.createObjectURL(blob);
-  a.download = `saidas_${state.fiscalNome.replace(/\s+/g,"_")}_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  showToast("CSV exportado");
-}
-
 // ── COPIAR RESUMO ──────────────────────────────
 function copiarTexto() {
   const hoje = new Date().toLocaleDateString("pt-BR");
-  let txt = `Registros de saída — ${state.fiscalNome}\nData: ${hoje}\n\n`;
+  let txt = "Registros de saída — " + state.fiscalNome + "\nData: " + hoje + "\n\n";
   state.equipes.forEach(eq => {
     const reg = state.registros[eq];
-    txt += `• ${eq}: ${reg?reg.hora:"pendente"}${reg&&reg.obs?" — "+reg.obs:""}\n`;
+    txt += "• " + eq + ": " + (reg ? reg.hora : "pendente") + (reg&&reg.obs?" — "+reg.obs:"") + "\n";
   });
   navigator.clipboard.writeText(txt).then(() => showToast("Resumo copiado"));
 }
@@ -467,8 +642,7 @@ function copiarTexto() {
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
+  t.textContent = msg; t.classList.add("show");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
 }
